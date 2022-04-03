@@ -3,9 +3,12 @@
 class Devoir
 {
     private $id;
-    private $nom;
-    private $recap;
-    private $ref_prof;
+    private $titre;
+    private $recapitulatif;
+    private $deadline;
+    private $ref_professeur;
+    private $ref_matiere;
+    private $ref_classe;
 
     public function __construct(array $donnees)
     {
@@ -22,52 +25,141 @@ class Devoir
         }
     }
 
-    public function getNom()
+    public function getId()
     {
-        return $this->nom;
+        return $this->id;
     }
 
-    public function setNom($nom)
+    public function setId($id): void
     {
-        $this->nom = $nom;
+        $this->id = $id;
     }
 
-    public function getRecap()
+    public function getTitre()
     {
-        return $this->recap;
+        return $this->titre;
     }
 
-    public function setRecap($recap)
+    public function setTitre($titre): void
     {
-        $this->recap = $recap;
+        $this->titre = $titre;
     }
+
+
+    public function getRecapitulatif()
+    {
+        return $this->recapitulatif;
+    }
+
+    public function setRecapitulatif($recapitulatif): void
+    {
+        $this->recapitulatif = $recapitulatif;
+    }
+
+    public function getDeadline()
+    {
+        return $this->deadline;
+    }
+
+    public function setDeadline($deadline): void
+    {
+        $this->deadline = $deadline;
+    }
+
+    public function getRefProfesseur()
+    {
+        return $this->ref_professeur;
+    }
+
+    public function setRefProfesseur($ref_professeur): void
+    {
+        $this->ref_professeur = $ref_professeur;
+    }
+
+    public function getRefMatiere()
+    {
+        return $this->ref_matiere;
+    }
+
+    public function setRefMatiere($ref_matiere): void
+    {
+        $this->ref_matiere = $ref_matiere;
+    }/**
+ * @return mixed
+ */
+public function getRefClasse()
+{
+    return $this->ref_classe;
+}
+public function setRefClasse($ref_classe): void
+{
+    $this->ref_classe = $ref_classe;
+}
 
     public function creerDevoir ($bdd){
-        $req = $bdd->prepare("SELECT * FROM devoir WHERE nom=:nom, recap =:recap, ref_professeur=:ref_professeur");
-        $res = $req->execute(array(
-            'nom' => $_POST['nom'],
-            'recap' => $_POST['recap'],
-            'ref_professeur' => $_POST['ref_professeur']
+        $req = $bdd->prepare("SELECT * FROM devoir WHERE titre=:titre, ref_matiere=:ref_matiere, ref_professeur=:ref_professeur");
+        $req->execute(array(
+            'titre' => $this->titre,
+            'ref_matiere' => $this->ref_matiere,
+            'ref_professeur' => $this->ref_professeur
         ));
         $res = $req->fetch();
         if ($res) {
             echo "<script>alert('Devoir existant');
-                window.location.href='../vue/#';</script>";
+                window.location.href='../vue/devoir/create.php';</script>";
         }
         else {
-            $req = $bdd->prepare("INSERT INTO devoir(nom, recap, ref_professeur) VALUES (:nom, :recap, :ref_professeur)");
+            $req = $bdd->prepare("INSERT INTO devoir(titre, recapitulatif, deadline, ref_professeur, ref_matiere, ref_classe)
+ VALUES (:titre, :recapitulatif, :deadline, :ref_professeur, :ref_matiere, :ref_classe)");
             $res = $req->execute(array(
-                'nom' => $this->nom,
-                'recap' => $this->recap,
-                'ref_professeur' => $this->ref_professeur
+                'titre' => $this->titre,
+                'recapitulatif' => $this->recapitulatif,
+                'deadline' => $this->deadline,
+                'ref_professeur' => $this->ref_professeur,
+                'ref_matiere' => $this->ref_matiere,
+                'ref_classe' => $this->ref_classe
             ));
             if ($res) {
-                echo "<script>alert('Devoir enregistrée');
-                window.location.href='../vue/#';</script>";
+                echo "<script>alert('Succès');
+                //window.location.href='../vue/devoir/create.php';</script>";
             } else {
                 echo "<script>alert('Erreur');
-                window.location.href='../vue/#';</script>";
+                //window.location.href='../vue/devoir/create.php';</script>";
             }
+        }
+    }
+    public function UpdateDevoir($bdd){
+        $req = $bdd->prepare("UPDATE devoir SET titre =:titre, recapitulatif =:recapitulatif, deadline =:deadline,
+                  ref_professeur =: ref_professeur, =:ref_matiere, ref_classe=:ref_classe");
+        $res = $req->execute(array(
+            'titre' => $this->titre,
+            'recapitulatif' => $this->recapitulatif,
+            'deadline' => $this->deadline,
+            'ref_professeur' => $this->ref_professeur,
+            'ref_matiere' => $this->ref_matiere,
+            'ref_classe' => $this->ref_classe
+        ));
+        if ($res) {
+            echo "<script>alert('Succès!');
+                //window.location.href='../../vue/professeur/choisirID.php';</script>";
+        } else {
+            echo "<script>alert('Erreur!');
+                //window.location.href='../../vue/professeur/choisirID.php';</script>";
+        }
+
+    }
+
+    public function DeleteDevoir($bdd){
+        $req = $bdd->prepare("DELETE FROM devoir WHERE id_devoir=:id_devoir");
+        $res = $req->execute(array(
+            'id_devoir' => $this->id
+        ));
+        if ($res) {
+            echo "<script>alert('Succès!');
+                //window.location.href='../../vue/etudiant/delete.php';</script>";
+        } else {
+            echo "<script>alert('Erreur');
+                //window.location.href='../../vue/etudiant/delete.php';</script>";
         }
     }
 
